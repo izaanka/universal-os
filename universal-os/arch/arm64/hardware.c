@@ -6,7 +6,7 @@
 
 // QEMU ramfb default allocation address for high memory framebuffers on the 'virt' board
 // We cast it as a 32-bit unsigned integer pointer (4 bytes per pixel: BGRA)
-volatile unsigned int* framebuffer = (volatile unsigned int*)0x4C000000;
+volatile unsigned int* framebuffer = (volatile unsigned int*)0x3c000000;
 
 // Simple 8x8 bitmap font array for basic characters (A-Z and space)
 // 1 bits represent text pixels, 0 bits represent background
@@ -66,10 +66,9 @@ void draw_char(char c, int x, int y, unsigned int color) {
 }
 
 void hw_init(void) {
-    // Fill the screen with a dark blue background color (0x000033BD)
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
         for (int x = 0; x < SCREEN_WIDTH; x++) {
-            draw_pixel(x, y, 0x001A2332);
+            draw_pixel(x, y, 0x001A2332); // Dark blue backdrop
         }
     }
 }
@@ -84,7 +83,7 @@ void hw_print(const char* str) {
             start_y += 20;
             continue;
         }
-        draw_char(str[i], start_x, start_y, 0x0000FF00); // Draw text in bright green
-        start_x += 18; // Advance cursor position horizontally
+        draw_char(str[i], start_x, start_y, 0x0000FF00); // Bright green text
+        start_x += 18;
     }
 }
