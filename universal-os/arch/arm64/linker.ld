@@ -1,6 +1,6 @@
 ENTRY(_start)
 SECTIONS {
-    . = 0x45000000; /* Moves the kernel code section to safety out of the framebuffer zone */
+    . = 0x40000000; /* Standard RAM execution base for QEMU 'virt' */
     .text : { *(.text) }
     .rodata : { *(.rodata) }
     .data   : { *(.data) }
