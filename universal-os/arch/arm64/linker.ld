@@ -1,6 +1,6 @@
 ENTRY(_start)
 SECTIONS {
-    . = 0x40000000; /* RAM execution base for QEMU 'virt' machine */
+    . = 0x40000000;
     .text : { *(.text) }
     .rodata : { *(.rodata) }
     .data   : { *(.data) }
