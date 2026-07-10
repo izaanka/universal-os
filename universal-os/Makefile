@@ -43,6 +43,6 @@ run-x86: kernel_x86.elf
 	qemu-system-x86_64 -kernel kernel_x86.elf
 
 run-arm: kernel_arm.elf
-	qemu-system-aarch64 -M virt -cpu cortex-a57 -device virtio-gpu-device -kernel kernel_arm.elf
+	qemu-system-aarch64 -M virt -cpu cortex-a57 -serial vc -display cocoa -kernel kernel_arm.elf
 clean:
 	rm -f *.o *.elf *.bin *.fat
