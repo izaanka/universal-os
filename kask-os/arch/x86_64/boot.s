@@ -9,15 +9,39 @@
 # Multiboot1 Header
 .set ALIGN,    1<<0
 .set MEMINFO,  1<<1
-.set FLAGS,    ALIGN | MEMINFO
+.set AOUT,     1<<16
+.set FLAGS,    ALIGN | MEMINFO | AOUT
 .set MAGIC,    0x1BADB002
 .set CHECKSUM, -(MAGIC + FLAGS)
 
-.section .multiboot
+.section .multiboot, "a"
 .align 4
     .long MAGIC
     .long FLAGS
     .long CHECKSUM
+    .long multiboot_start   # header_addr
+    .long multiboot_start   # load_addr
+    .long data_end          # load_end_addr
+    .long bss_end           # bss_end_addr
+    .long _start            # entry_addr
+
+# Multiboot2 Header
+.set MB2_MAGIC,    0xE85250D6
+.set MB2_ARCH,     0
+.set MB2_HDR_LEN,  (mb2_header_end - mb2_header_start)
+.set MB2_CHECKSUM, -(MB2_MAGIC + MB2_ARCH + MB2_HDR_LEN)
+
+.align 8
+mb2_header_start:
+    .long MB2_MAGIC
+    .long MB2_ARCH
+    .long MB2_HDR_LEN
+    .long MB2_CHECKSUM
+    # End tag
+    .short 0
+    .short 0
+    .long 8
+mb2_header_end:
 
 # ============================================================
 # 32-bit Entry Point

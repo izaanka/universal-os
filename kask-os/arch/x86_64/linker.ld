@@ -5,10 +5,12 @@ SECTIONS {
     . = 1M;
 
     .multiboot BLOCK(4K) : ALIGN(4K) {
+        multiboot_start = .;
         *(.multiboot)
     }
 
     .text BLOCK(4K) : ALIGN(4K) {
+        text_start = .;
         *(.text)
     }
 
@@ -18,10 +20,12 @@ SECTIONS {
 
     .data BLOCK(4K) : ALIGN(4K) {
         *(.data)
+        data_end = .;
     }
 
     .bss BLOCK(4K) : ALIGN(4K) {
         *(COMMON)
         *(.bss)
+        bss_end = .;
     }
 }
