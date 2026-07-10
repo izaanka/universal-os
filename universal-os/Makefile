@@ -43,6 +43,15 @@ run-x86: kernel_x86.elf
 	qemu-system-x86_64 -kernel kernel_x86.elf
 
 run-arm: kernel_arm.elf
-	qemu-system-aarch64 -M virt -cpu cortex-a57 -serial vc -display cocoa -kernel kernel_arm.elf
+	qemu-system-aarch64 -M virt -cpu cortex-a57 -device virtio-gpu-device -kernel kernel_arm.elf
 clean:
 	rm -f *.o *.elf *.bin *.fat
+
+# --- ISO Creation Target ---
+os_core.iso: kernel_x86.elf os_core.fat
+	cp kernel_x86.elf iso_root/boot/
+	cp os_core.fat iso_root/boot/
+	grub-mkrescue -o os_core.iso iso_root
+
+run-iso: os_core.iso
+	qemu-system-x86_64 -cdrom os_core.iso
