@@ -1,27 +1,30 @@
-.set MAGIC,    0xe85250d6
-.set ARCH,     0
-.set LENGTH,   (multiboot_header_end - multiboot_header_start)
-.set CHECKSUM, -(MAGIC + ARCH + LENGTH)
+# Multiboot1 Header Constants
+.set ALIGN,    14             # Align loaded modules on page boundaries
+.set MEMINFO,  11             # Provide memory map profiles
+.set FLAGS,    ALIGN | MEMINFO
+.set MAGIC,    0x1BADB002     # Multiboot1 Magic Number
+.set CHECKSUM, -(MAGIC + FLAGS)
 
 .section .multiboot
-multiboot_header_start:
+.align 4
     .long MAGIC
-    .long ARCH
-    .long LENGTH
+    .long FLAGS
     .long CHECKSUM
-    .short 0, 0
-    .long 8
-multiboot_header_end:
 
 .section .text
 .global _start
 _start:
+    # Clear interrupts and set up stack pointer
+    cli
     mov $stack_top, %esp
+    
+    # Push arguments if needed, then branch to C core
     call kernel_main
-cli
+
 1:  hlt
     jmp 1b
 
 .section .bss
+.align 16
 .skip 16384
 stack_top:
