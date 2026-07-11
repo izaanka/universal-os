@@ -4,6 +4,11 @@
  * Kask OS — Kernel Entry Point
  * ============================================================ */
 
+int fs_drivers_available(void) {
+    /* bit 0 = FAT32, bit 1 = exFAT */
+    return 0x03; /* both compiled in */
+}
+
 static void print_boot_banner(void) {
     hw_set_color(0x0B);
     hw_print("\n");
@@ -33,6 +38,12 @@ static void print_boot_banner(void) {
 
     hw_set_color(0x0A); hw_print("  [OK] ");
     hw_set_color(0x0F); hw_print("In-memory filesystem mounted\n");
+
+    hw_set_color(0x0A); hw_print("  [OK] ");
+    hw_set_color(0x0F); hw_print("FAT32 driver loaded\n");
+
+    hw_set_color(0x0A); hw_print("  [OK] ");
+    hw_set_color(0x0F); hw_print("exFAT driver loaded\n");
 
     hw_set_color(0x0A); hw_print("  [OK] ");
     hw_set_color(0x0F); hw_print("Shell ready\n");

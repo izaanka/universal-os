@@ -81,7 +81,13 @@ build/x86_string.o: kernel/string.c shared/kernel.h | build
 build/x86_shell.o: kernel/shell.c shared/kernel.h | build
 	$(X86_CC) -c kernel/shell.c -o build/x86_shell.o $(X86_CFLAGS)
 
-X86_OBJS = build/x86_boot.o build/x86_hw.o build/x86_main.o build/x86_string.o build/x86_shell.o
+build/x86_fat32.o: kernel/fat32.c shared/fat32.h shared/kernel.h | build
+	$(X86_CC) -c kernel/fat32.c -o build/x86_fat32.o $(X86_CFLAGS)
+
+build/x86_exfat.o: kernel/exfat.c shared/exfat.h shared/kernel.h | build
+	$(X86_CC) -c kernel/exfat.c -o build/x86_exfat.o $(X86_CFLAGS)
+
+X86_OBJS = build/x86_boot.o build/x86_hw.o build/x86_main.o build/x86_string.o build/x86_shell.o build/x86_fat32.o build/x86_exfat.o
 
 kask_x86.elf: $(X86_OBJS)
 	$(X86_LD) -nostdlib -T arch/x86_64/linker.ld $(X86_OBJS) -o kask_x86.elf

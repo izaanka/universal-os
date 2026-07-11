@@ -28,4 +28,8 @@ int    k_isdigit(char c);
 /* ---- Shell ---- */
 void shell_run(void);
 
+/* ---- Filesystem Drivers ---- */
+/* Returns bitmask: bit 0 = FAT32 compiled, bit 1 = exFAT compiled */
+int  fs_drivers_available(void);
+
 #endif

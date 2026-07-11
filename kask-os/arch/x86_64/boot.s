@@ -37,7 +37,21 @@ mb2_header_start:
     .long MB2_ARCH
     .long MB2_HDR_LEN
     .long MB2_CHECKSUM
-    # End tag
+
+    # ---- Framebuffer tag (type 5) ----
+    # Requests VGA text mode (depth=0 means text, not linear fb).
+    # This prevents GRUB from searching for a graphical video mode
+    # and eliminates 'error: no suitable video mode found'.
+    .align 8
+    .short 5        # tag type = framebuffer
+    .short 0        # flags = 0 (optional — don't fail if unsatisfied)
+    .long  20       # size = 20 bytes
+    .long  80       # preferred width  (0 = no preference)
+    .long  25       # preferred height (0 = no preference)
+    .long  0        # preferred depth  (0 = text mode)
+
+    # ---- End tag ----
+    .align 8
     .short 0
     .short 0
     .long 8

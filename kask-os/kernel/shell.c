@@ -225,6 +225,7 @@ static void cmd_help(void) {
         {"mkdir <d>  ", "Create a directory"},
         {"rm <file>  ", "Remove a file"},
         {"rmdir <d>  ", "Remove empty directory"},
+        {"fsinfo     ", "Show filesystem driver status"},
         {"reboot     ", "Reboot the system"},
         {"shutdown   ", "Halt the system"},
         {0, 0}
@@ -237,6 +238,30 @@ static void cmd_help(void) {
         hw_print(cmds[i][1]);
         hw_putchar('\n');
     }
+    cprint("  ----------------------------------------\n\n", C_DIM);
+    hw_set_color(C_NORMAL);
+}
+
+static void cmd_fsinfo(void) {
+    cprint("\n  Filesystem Drivers\n", C_HEAD);
+    cprint("  ----------------------------------------\n", C_DIM);
+
+    hw_set_color(C_ACCENT); hw_print("  FAT32  ");
+    hw_set_color(C_NORMAL); hw_print("driver");
+    hw_set_color(0x0A);     hw_print(" [LOADED]\n");
+    hw_set_color(C_DIM);
+    hw_print("    Supports: FAT32 volumes, 8.3 + LFN filenames\n");
+    hw_print("    Status  : Buffer-based parser ready\n");
+    hw_print("    Note    : Requires ATA/AHCI block driver for live disk access\n");
+
+    hw_set_color(C_ACCENT); hw_print("  exFAT  ");
+    hw_set_color(C_NORMAL); hw_print("driver");
+    hw_set_color(0x0A);     hw_print(" [LOADED]\n");
+    hw_set_color(C_DIM);
+    hw_print("    Supports: exFAT volumes, UTF-16LE filenames, 64-bit file sizes\n");
+    hw_print("    Status  : Buffer-based parser ready\n");
+    hw_print("    Note    : Requires ATA/AHCI block driver for live disk access\n");
+
     cprint("  ----------------------------------------\n\n", C_DIM);
     hw_set_color(C_NORMAL);
 }
@@ -497,6 +522,7 @@ void shell_run(void) {
         else if (k_strcmp(argv[0], "rmdir") == 0)    cmd_rmdir(argc, argv);
         else if (k_strcmp(argv[0], "reboot") == 0)   cmd_reboot();
         else if (k_strcmp(argv[0], "shutdown") == 0)  cmd_shutdown();
+        else if (k_strcmp(argv[0], "fsinfo") == 0)    cmd_fsinfo();
         else { cprint(argv[0], C_ERROR); cprint(": command not found\n", C_ERROR); }
     }
 }
