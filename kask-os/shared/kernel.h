@@ -32,4 +32,8 @@ void shell_run(void);
 /* Returns bitmask: bit 0 = FAT32 compiled, bit 1 = exFAT compiled */
 int  fs_drivers_available(void);
 
+/* ---- Framebuffer (set by kernel_main from MB2 info) ---- */
+/* addr=physical framebuffer address, w/h=pixels, pitch=bytes/row, bpp=bits/pixel */
+void hw_init_fb(uint64_t addr, uint32_t w, uint32_t h, uint32_t pitch, uint8_t bpp);
+
 #endif

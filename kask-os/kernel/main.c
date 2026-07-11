@@ -1,12 +1,43 @@
 #include "../shared/kernel.h"
+#include <stdint.h>
 
 /* ============================================================
  * Kask OS — Kernel Entry Point
  * ============================================================ */
 
-int fs_drivers_available(void) {
-    /* bit 0 = FAT32, bit 1 = exFAT */
-    return 0x03; /* both compiled in */
+int fs_drivers_available(void) { return 0x03; /* FAT32 + exFAT */ }
+
+/* ---- Multiboot2 tag iteration ---- */
+/* The MB2 info pointer is in RDI when kernel_main is called
+   (saved from EBX by boot.s → EDI → RDI in 64-bit mode).    */
+#define MB2_TAG_FB   8u
+#define MB2_FB_TYPE_RGB 1u
+
+typedef struct { uint32_t type, size; } mb2_tag_t;
+typedef struct {
+    uint32_t type, size;
+    uint64_t addr;
+    uint32_t pitch, width, height;
+    uint8_t  bpp, fb_type;
+    uint16_t reserved;
+} mb2_tag_fb_t;
+
+static void parse_mb2(uint32_t mb2_phys) {
+    if (!mb2_phys) return;
+    uint8_t* p = (uint8_t*)(uintptr_t)mb2_phys + 8; /* skip total_size + reserved */
+    for (int guard = 0; guard < 64; guard++) {
+        mb2_tag_t* tag = (mb2_tag_t*)p;
+        if (tag->type == 0) break; /* end tag */
+        if (tag->type == MB2_TAG_FB) {
+            mb2_tag_fb_t* fb = (mb2_tag_fb_t*)p;
+            if (fb->fb_type == MB2_FB_TYPE_RGB && fb->bpp == 32)
+                hw_init_fb(fb->addr, fb->width, fb->height, fb->pitch, fb->bpp);
+            break;
+        }
+        /* tags are 8-byte aligned */
+        uint32_t sz = tag->size;
+        p += (sz + 7u) & ~7u;
+    }
 }
 
 static void print_boot_banner(void) {
@@ -53,7 +84,8 @@ static void print_boot_banner(void) {
     hw_set_color(0x0F);
 }
 
-void kernel_main(void) {
+void kernel_main(uint32_t mb2_info) {
+    parse_mb2(mb2_info);  /* set up framebuffer before first print */
     hw_init();
     print_boot_banner();
     shell_run();

@@ -42,6 +42,17 @@ X86_CFLAGS    = $(COMMON_CFLAGS) -m64 -mcmodel=large -mno-red-zone -mno-sse -mno
 ARM_CFLAGS    = $(COMMON_CFLAGS) -march=armv8-a -mtune=cortex-a53
 RV_CFLAGS     = $(COMMON_CFLAGS) -march=rv64imac_zicsr -mabi=lp64
 
+# --- QEMU Display (OS-specific) ---
+# Linux: GTK with zoom-to-fit (resizable, content scales to fill window)
+# macOS: SDL with zoom-to-fit (Homebrew QEMU does not include GTK)
+ifeq ($(UNAME_S),Linux)
+    QEMU_DISPLAY = -display gtk,zoom-to-fit=on,show-menubar=off
+else ifeq ($(UNAME_S),Darwin)
+    QEMU_DISPLAY = -display sdl,zoom-to-fit=on
+else
+    QEMU_DISPLAY = -display sdl
+endif
+
 # --- Kernel Sources (shared) ---
 KERN_SRCS = kernel/main.c kernel/string.c kernel/shell.c
 
@@ -175,10 +186,7 @@ rpi: kernel8.img
 # QEMU Run Targets
 # ============================================================
 
-# x86_64 — GTK window with zoom-to-fit: resizable, content scales to fill window
-# Fixes the "incredibly small 640x400" VGA text mode window on modern displays.
-QEMU_DISPLAY = -display gtk,zoom-to-fit=on,show-menubar=off
-
+# x86_64 — resizable window, content zooms to fill (fixes tiny 640x400 VGA on modern displays)
 run-x86: kask_x86.elf
 	qemu-system-x86_64 -kernel kask_x86.elf -vga std $(QEMU_DISPLAY) \
 		-no-reboot -no-shutdown
